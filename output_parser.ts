@@ -46,10 +46,9 @@ async function main(tag: string = "005502") {
   }
 
   const heading = $("caption font:not([color='red'])");
-  // console.log(heading.html());
 
-  const name_formula = heading.text()?.trim()?.split(",")[0];
-  const name_html = heading.html()?.split(",")[0] ?? "";
+  const [name_formula, ...name_formula_meta] = heading.text()?.trim()?.split(/[, ]/g);
+  const [name_html, ...name_html_meta] = heading.html()?.split(/[, ]/g) ?? "";
 
   const iupac_name = $("caption").text().split("\n")[1].split(/[,;]/g)[0];
   const [, ...name_meta] =
@@ -58,7 +57,20 @@ async function main(tag: string = "005502") {
       ?.split("\n")[1]
       .split(/[,;]/g)
       .map((f) => endash_str(f.trim())) ?? [];
-  const name = { default: endash_str(iupac_name), meta: name_meta, formula: endash_str(name_formula), html: endash_str(name_html) };
+
+  const name = {
+    default: endash_str(iupac_name),
+    meta: name_meta,
+    formula: {
+      default: endash_str(name_formula),
+      meta: name_formula_meta.join(" ").replaceAll("  ", ", "),
+    },
+    html: {
+      default: endash_str(name_html),
+      meta: name_html_meta.join(" ").replaceAll("  ", ", "),
+    },
+  };
+
   const processed_informations = { name, ...full_info, references };
 
   await Bun.write("./full_info.json", JSON.stringify(processed_informations, null, 2));
@@ -66,4 +78,4 @@ async function main(tag: string = "005502") {
 }
 // https://cdms.astro.uni-koeln.de/classic/entries/c013505.cat
 
-main("044508");
+main("044519");
