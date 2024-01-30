@@ -3,6 +3,10 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import gs from "googlescholar-scrape";
 
+function endash_str(str: string) {
+  return str.replaceAll("–", "-");
+}
+
 async function main(tag: string = "005502") {
   tag = tag.padStart(6, "0");
   const entries_url = `https://cdms.astro.uni-koeln.de/cgi-bin/cdmsinfo?file=e${tag}.cat`;
@@ -20,7 +24,7 @@ async function main(tag: string = "005502") {
   for (const arr of td_parent.toArray()) {
     const key = $(arr?.firstChild).text().trim();
     const value = $(arr.lastChild).text().trim();
-    full_info[key] = value;
+    full_info[endash_str(key)] = endash_str(value);
     // console.log({ key, value });
   }
 
@@ -51,4 +55,4 @@ async function main(tag: string = "005502") {
   return processed_informations;
 }
 
-main("005502");
+main("005501");
