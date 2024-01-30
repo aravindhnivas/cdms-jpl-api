@@ -3,7 +3,7 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import gs from "googlescholar-scrape";
 
-const tag = "025510".padStart(6, "0");
+const tag = "005502".padStart(6, "0");
 const entries_url = `https://cdms.astro.uni-koeln.de/cgi-bin/cdmsinfo?file=e${tag}.cat`;
 
 const { data } = await axios.get(entries_url);
@@ -18,6 +18,15 @@ for (const element of ref_element.toArray()) {
   ref = ref.replaceAll("\n", " ").replaceAll("  ", " ");
   references.push(ref);
 }
+const p_elements = $("td[colspan='2'] p[align='justify']").children().not("font[color='#064898']");
+
+let contents: string[] = [];
+p_elements.each((index, element) => {
+  contents.push($(element).text());
+});
+
+// const p_text = $("p").text();
+console.log({ contents });
 
 // const ind = 0;
 // console.log(references[ind]);
@@ -76,8 +85,14 @@ const heading = $("caption font:not([color='red'])");
 
 const name_formula = heading.text()?.trim()?.split(",")[0];
 const name_html = heading.html()?.split(",")[0];
-
-const caption = $("caption").text().split("\n")[1];
-const [iupac_name, ...name_meta] = caption.split(",");
-
-await Bun.write("./parsed.json", JSON.stringify({ name: { iupac_name, name_meta, name_formula, name_html }, qpart, values, meta, references }, null, 2));
+// console.log(heading.html());
+// const caption = $("caption").text().split("\n")[1];
+// const [iupac_name, ...name_meta] = caption.split(",");
+const iupac_name = $("caption").text().split("\n")[1].split(",")[0];
+const [, ...name_meta] =
+  $("caption")
+    .html()
+    ?.split("\n")[1]
+    .split(",")
+    .map((f) => f.trim()) ?? [];
+await Bun.write("./parsed.json", JSON.stringify({ name: { default: iupac_name, meta: name_meta, formula: name_formula, html: name_html }, qpart, values, meta, references }, null, 2));
