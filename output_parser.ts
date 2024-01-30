@@ -63,11 +63,11 @@ async function main(tag: string = "005502") {
     meta: name_meta,
     formula: {
       default: endash_str(name_formula),
-      meta: name_formula_meta.join(" ").replaceAll("  ", ", "),
+      meta: endash_str(name_formula_meta.join(" ").replaceAll("  ", ", ")),
     },
     html: {
       default: endash_str(name_html),
-      meta: name_html_meta.join(" ").replaceAll("  ", ", "),
+      meta: endash_str(name_html_meta.join(" ").replaceAll("  ", ", ")),
     },
   };
 
@@ -78,4 +78,4 @@ async function main(tag: string = "005502") {
 }
 // https://cdms.astro.uni-koeln.de/classic/entries/c013505.cat
 
-main("044519");
+main("046521");
