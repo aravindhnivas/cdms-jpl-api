@@ -32,14 +32,14 @@ async function main(tag: string = "005502") {
     let ref = $(element).text();
     ref = ref.replaceAll(/(\(\d\))/g, "").trim();
     ref = ref.replaceAll("\n", " ").replaceAll("  ", " ");
-    references.push(ref);
+    references.push(endash_str(ref));
   }
 
   const heading = $("caption font:not([color='red'])");
   // console.log(heading.html());
 
   const name_formula = heading.text()?.trim()?.split(",")[0];
-  const name_html = heading.html()?.split(",")[0];
+  const name_html = heading.html()?.split(",")[0] ?? "";
 
   const iupac_name = $("caption").text().split("\n")[1].split(/[,;]/g)[0];
   const [, ...name_meta] =
@@ -47,12 +47,12 @@ async function main(tag: string = "005502") {
       .html()
       ?.split("\n")[1]
       .split(/[,;]/g)
-      .map((f) => f.trim()) ?? [];
-  const name = { default: iupac_name, meta: name_meta, formula: name_formula, html: name_html };
+      .map((f) => endash_str(f.trim())) ?? [];
+  const name = { default: endash_str(iupac_name), meta: name_meta, formula: endash_str(name_formula), html: endash_str(name_html) };
   const processed_informations = { name, ...full_info, references };
 
   await Bun.write("./full_info.json", JSON.stringify(processed_informations, null, 2));
   return processed_informations;
 }
 
-main("005501");
+main("013505");
