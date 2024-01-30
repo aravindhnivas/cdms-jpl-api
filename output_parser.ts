@@ -23,9 +23,19 @@ async function main(tag: string = "005502") {
   const full_info = {};
   for (const arr of td_parent.toArray()) {
     const key = $(arr?.firstChild).text().trim();
-    const value = $(arr.lastChild).text().trim();
-    full_info[endash_str(key)] = endash_str(value);
-    // console.log({ key, value });
+    // const value = $(arr.lastChild).text().trim();
+    let value: string | string[] = "";
+
+    if (key === "Contributor") {
+      if ($(arr.lastChild).html()?.includes("<br>")) {
+        value = $(arr.lastChild).html()?.split("<br>");
+      } else {
+        value = [endash_str($(arr.lastChild).text().trim())];
+      }
+    } else {
+      value = endash_str($(arr.lastChild).text().trim());
+    }
+    full_info[endash_str(key)] = value;
   }
 
   for (const element of ref_element.toArray()) {
@@ -54,5 +64,6 @@ async function main(tag: string = "005502") {
   await Bun.write("./full_info.json", JSON.stringify(processed_informations, null, 2));
   return processed_informations;
 }
+// https://cdms.astro.uni-koeln.de/classic/entries/c013505.cat
 
-main("013505");
+main("044508");
