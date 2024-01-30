@@ -45,9 +45,13 @@ async function main(tag: string = "005502") {
   }
 
   const heading = $("caption font:not([color='red'])");
-
+  console.log(heading.html()?.split(/[, ]/g));
   const [name_formula, ...name_formula_meta] = heading.text()?.trim()?.split(/[, ]/g);
-  const [name_html, ...name_html_meta] = heading.html()?.split(/[, ]/g) ?? "";
+  const [name_html, ...name_html_meta] =
+    heading
+      .html()
+      ?.replace(/<\/?font.*?>/g, "")
+      .split(/[, ]/g) ?? "";
 
   const iupac_name = $("caption").text().split("\n")[1].split(/[,;]/g)[0];
   const [, ...name_meta] =
@@ -74,4 +78,4 @@ async function main(tag: string = "005502") {
   return processed_informations;
 }
 
-main("013505");
+main("039502");
