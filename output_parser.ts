@@ -4,7 +4,7 @@ import * as cheerio from "cheerio";
 import gs from "googlescholar-scrape";
 
 function endash_str(str: string) {
-  return str.replaceAll("–", "-");
+  return str.replaceAll("–", "-").trim();
 }
 
 async function main(tag: string = "005502") {
@@ -60,7 +60,7 @@ async function main(tag: string = "005502") {
 
   const name = {
     default: endash_str(iupac_name),
-    meta: name_meta,
+    meta: name_meta.join(", "),
     formula: {
       default: endash_str(name_formula),
       meta: endash_str(name_formula_meta.join(" ").replaceAll("  ", ", ")),
@@ -78,4 +78,4 @@ async function main(tag: string = "005502") {
 }
 // https://cdms.astro.uni-koeln.de/classic/entries/c013505.cat
 
-main("046521");
+main("046501");
