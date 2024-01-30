@@ -73,6 +73,5 @@ async function main(tag: string = "005502") {
   await Bun.write("./full_info.json", JSON.stringify(processed_informations, null, 2));
   return processed_informations;
 }
-// https://cdms.astro.uni-koeln.de/classic/entries/c013505.cat
 
-main("046501");
+main("013505");
