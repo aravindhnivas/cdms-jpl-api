@@ -1,7 +1,6 @@
 import * as Bun from "bun";
 import axios from "axios";
 import * as cheerio from "cheerio";
-import gs from "googlescholar-scrape";
 
 function endash_str(str: string) {
   return str.replaceAll("–", "-").trim();
@@ -70,9 +69,7 @@ async function main(tag: string = "005502") {
       meta: endash_str(name_html_meta.join(" ").replaceAll("  ", ", ")),
     },
   };
-
   const processed_informations = { name, ...full_info, references };
-
   await Bun.write("./full_info.json", JSON.stringify(processed_informations, null, 2));
   return processed_informations;
 }
