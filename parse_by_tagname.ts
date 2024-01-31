@@ -103,50 +103,36 @@ export async function JPL(tag: string = '1001') {
 
 	const data_obj = {};
 	const qpart = {};
-	const rot_const = {};
+	let meta: string[] = [];
 
 	for (let line of datalines) {
 		line = line.replaceAll(/[\\\\\$\^\{\}:=]/g, '').trim();
-
 		if (line.includes('headend')) break;
 		if (!line) continue;
 
-		if (line.match(/Q\(\d+\.\d+?\)/g)) {
-			const [key, value] = line
-				.split('&')
-				.map((f) => f.trim())
-				.slice(2, 4);
-			qpart[key] = value;
-		}
-
-		if (line.match(/[ABC]&/g)) {
-			const [key, value] = line
-				.split('&')
-				.map((f) => f.trim())
-				.slice(2, 4);
-			rot_const[key] = value;
-		}
-		let [key, value] = line
-			.split('&')
-			.map((f) => f.trim())
-			.slice(0, 2);
-
+		let [key, value, qkey, qval] = line.split('&').map((f) => f.trim());
 		if (key.match(/[><]/g)) {
-			// Split the key on the space character
 			const parts = key.split(' ');
-			// Reassemble the key and value
 			key = parts.slice(0, -1).join(' ');
 			value = parts[parts.length - 1] + ' ' + value;
 		}
+		if (qkey.match(/[><]/g)) {
+			const parts = qkey.split(' ');
+			qkey = parts.slice(0, -1).join(' ');
+			qval = parts[parts.length - 1] + ' ' + qval;
+		}
 
-		if (key) data_obj[key] = value;
+		key ? (data_obj[key] = value) : meta.push(value);
+		qkey ? (qpart[qkey] = qval) : meta.push(qval);
 	}
+	meta = meta.filter((f) => f);
 	await Bun.write(
 		`./temp/jpl_${tag}_data.json`,
-		JSON.stringify({ ...data_obj, ...rot_const, ...qpart, reference }, null, 2)
+		// `./temp/jpl_data.json`,
+		JSON.stringify({ ...data_obj, ...qpart, meta, reference }, null, 2)
 	);
-	return { ...data_obj, ...rot_const, ...qpart, reference };
+	// return { ...data_obj, ...rot_const, ...qpart, reference };
 }
 
 // CDMS('004501');
-JPL('46004');
+// JPL('2001');
