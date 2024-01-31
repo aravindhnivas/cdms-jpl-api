@@ -1,7 +1,9 @@
 import * as Bun from 'bun';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import tex2str from 'latex-to-unicode';
 
+// console.log(tex2str('\\mu_a'));
 function endash_str(str: string) {
 	return str.replaceAll('–', '-').trim();
 }
@@ -102,7 +104,8 @@ export async function JPL(tag: string = '1001') {
 		.filter((f) => f);
 
 	const save_data = entries
-		.replaceAll(/[\\\\\$\^\{\}:=]/g, '')
+		// .replaceAll(/[\\\\\$\^\{\}:=]/g, '')
+		.replaceAll(/[\\\\$:{}^]/g, '')
 		.split('\n')
 		.map((f) => f.trim());
 
@@ -123,6 +126,13 @@ export async function JPL(tag: string = '1001') {
 		}
 
 		let [k1, v1, k2, v2] = splitted_key_val as string[];
+		k1 = k1.replaceAll('=', '').trim();
+		k2 = k2.replaceAll('=', '').trim();
+		// k1 = tex2str(k1);
+		// v1 = tex2str(v1);
+		k2 = tex2str(k2);
+		v2 = tex2str(v2);
+
 		if (k1.match(/[><]/g)) {
 			const parts = k1.split(' ');
 			k1 = parts.slice(0, -1).join(' ');
@@ -166,6 +176,7 @@ export async function JPL(tag: string = '1001') {
 		`./temp/jpl_data.json`,
 		JSON.stringify({ ...props, name_meta, reference }, null, 2)
 	);
+	console.log('finished fetching JPL data');
 }
 
 // CDMS('004501');
