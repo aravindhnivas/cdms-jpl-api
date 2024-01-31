@@ -78,18 +78,25 @@ export async function CDMS(tag: string = '005502') {
 	return processed_informations;
 }
 
+const sanitize_latext_to_string = (str: string) => {
+	return str
+		.replaceAll(/[$\^\{\}]/g, '')
+		.replaceAll('~', ' ')
+		.replaceAll('\\&', '&')
+		.replaceAll('\\it', '')
+		.replaceAll('\\bf', '')
+		.replaceAll('  ', ' ')
+		.replaceAll('\\', '')
+		.trim();
+};
+
 export async function JPL(tag: string = '1001') {
 	tag = tag.padStart(6, '0');
 	const entries_url = `https://spec.jpl.nasa.gov/ftp/pub/catalog/doc/d${tag}.cat`;
 	const { data } = await axios.get(entries_url);
 
 	const datalines = data.split('\n');
-	let ref = data
-		.split('headend')[1]
-		.replaceAll(/[$\^\{\}]/g, '')
-		// .replaceAll(/\\\\(bf|it)\b/g, '')
-		.trim();
-	ref = ref
+	const reference = sanitize_latext_to_string(data.split('headend')[1])
 		.split('\n')
 		.map((f) => f.trim())
 		.filter((f) => f);
@@ -136,9 +143,9 @@ export async function JPL(tag: string = '1001') {
 	}
 	await Bun.write(
 		`./temp/jpl_${tag}_data.json`,
-		JSON.stringify({ ...data_obj, ...rot_const, ...qpart, ref }, null, 2)
+		JSON.stringify({ ...data_obj, ...rot_const, ...qpart, reference }, null, 2)
 	);
-	return { ...data_obj, ...rot_const, ...qpart, ref };
+	return { ...data_obj, ...rot_const, ...qpart, reference };
 }
 
 // CDMS('004501');
