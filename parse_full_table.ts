@@ -37,12 +37,17 @@ async function get_cdms_data() {
 }
 
 async function html_to_csv(data: string[], filename: string = "output.csv") {
-  console.log("writing");
-  await Bun.write("./temp/table.json", JSON.stringify(data));
+  console.log("writing json");
+  await Bun.write(`./temp/${filename}.json`, JSON.stringify(data));
+  console.log(`wrote to ${filename}.json`);
+
+  console.log("converting to csv");
   const csv = json2csv.parse(data);
-  await Bun.write("./temp/output.csv", csv);
-  console.log("written to file " + filename);
+  console.log("writing csv");
+  await Bun.write(`./temp/${filename}.csv`, csv);
+  console.log(`wrote to ${filename}.csv`);
 }
 
 const cdms_data = await get_cdms_data();
-html_to_csv(cdms_data, "cdms_data.csv");
+console.log(cdms_data.length);
+// html_to_csv(cdms_data, "cdms_data");
