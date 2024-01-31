@@ -105,51 +105,73 @@ export async function JPL(tag: string = '1001') {
 	const qpart = {};
 	let meta: string[] = [];
 
-	for (let line of datalines) {
-		line = line.replaceAll(/[\\\\\$\^\{\}:=]/g, '').trim();
-		if (line.includes('headend')) break;
-		if (!line) continue;
+	const save_data = data
+		.split('headend')[0]
+		.replaceAll(/[\\\\\$\^\{\}:=]/g, '')
+		.split('\n')
+		.map((f) => f.trim());
 
-		let [key, value, qkey, qval] = line.split('&').map((f) => f.trim());
-		if (key.match(/[><]/g)) {
-			const parts = key.split(' ');
-			key = parts.slice(0, -1).join(' ');
-			value = parts[parts.length - 1] + ' ' + value;
-		}
-		if (qkey.match(/[><]/g)) {
-			const parts = qkey.split(' ');
-			qkey = parts.slice(0, -1).join(' ');
-			qval = parts[parts.length - 1] + ' ' + qval;
+	await Bun.write(`./temp/jpl_data.txt`, save_data.join('\n').trim());
+
+	const name_meta: string[] = [];
+	const props: {
+		[key: string]: string | string[];
+		Contributor: string[];
+		reference: string[];
+	} = { Contributor: [], reference: [] };
+	let start_second_part = false;
+	for (const ln of save_data) {
+		const splitted_key_val = ln.split('&').map((f) => f.trim());
+		if (splitted_key_val.join('').trim() === '') continue;
+		if (ln.includes('Lines Listed ')) {
+			start_second_part = true;
 		}
 
-		if (!(key || qkey) && value && data_obj['Contributor']) {
-			data_obj['Contributor'].push(value);
-			continue;
+		let [k1, v1, k2, v2] = splitted_key_val as string[];
+		if (k1.match(/[><]/g)) {
+			const parts = k1.split(' ');
+			k1 = parts.slice(0, -1).join(' ');
+			v1 = parts[parts.length - 1] + ' ' + v1;
 		}
 
-		if (key === 'Contributor') {
-			if (key in data_obj) {
-				data_obj[key].push(value);
-			} else {
-				data_obj[key] = [value];
+		if (start_second_part) {
+			props[k1] = v1;
+			props[k2] = v2;
+		} else {
+			if (k1 === 'Contributor' && v1) {
+				props['Contributor'].push(v1);
+				if (k2 && v2) {
+					props[k2] = v2;
+				}
+
+				if (!k2 && v2) {
+					name_meta.push(v2);
+				}
+				continue;
 			}
-			continue;
-		}
 
-		key ? (data_obj[key] = value) : meta.push(value);
-		qkey ? (qpart[qkey] = qval) : meta.push(qval);
+			if (!k1 && v1) {
+				props['Contributor'].push(v1);
+			}
+
+			if (k1 && v1) {
+				props[k1] = v1;
+			}
+			if (k2 && v2) {
+				props[k2] = v2;
+			}
+
+			if (!k2 && v2) {
+				name_meta.push(v2);
+			}
+		}
 	}
-	meta = meta.filter((f) => f);
-	const name = {
-		formula: data_obj['Name'],
-		name: meta[0]
-	};
 	await Bun.write(
 		// `./temp/jpl_${tag}_data.json`,
 		`./temp/jpl_data.json`,
-		JSON.stringify({ ...data_obj, ...qpart, meta, reference }, null, 2)
+		JSON.stringify({ ...props, name_meta, reference }, null, 2)
 	);
 }
 
 // CDMS('004501');
-JPL('41006');
+JPL('32002');
