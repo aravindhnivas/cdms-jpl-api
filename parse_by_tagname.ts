@@ -168,18 +168,18 @@ export async function JPL(tag: string = '1001') {
 		}
 	}
 
-	// const qkeys = Object.keys(props).filter((f) => f.match(/Q\(\d+\.\d+?\)/g));
-	// const qpart = {};
-	// qkeys.forEach((f) => {
-	// 	qpart[f] = props[f];
-	// 	delete props[f];
-	// });
+	const qkeys = Object.keys(props).filter((f) => f.match(/Q\(\d+\.\d+?\)/g));
+	const qpart = {};
+	qkeys.forEach((f) => {
+		qpart[f] = props[f];
+		delete props[f];
+	});
 
 	// console.log(qpart);
 	await Bun.write(
 		// `./temp/jpl_${tag}_data.json`,
 		`./temp/jpl_data.json`,
-		JSON.stringify({ name_meta, ...props, reference }, null, 2)
+		JSON.stringify({ name_meta, ...props, ...qpart, reference }, null, 2)
 	);
 	console.log('finished fetching JPL data');
 }
