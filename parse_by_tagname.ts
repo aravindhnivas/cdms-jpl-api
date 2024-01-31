@@ -136,8 +136,8 @@ export async function JPL(tag: string = '1001') {
 		}
 
 		if (start_second_part) {
-			if (k1 && v1) props[k1] = v1;
-			if (k2 && v2) props[k2] = v2;
+			if (k1) props[k1] = v1;
+			if (k2) props[k2] = v2;
 		} else {
 			if (k1 === 'Contributor' && v1) {
 				props['Contributor'].push(v1);
@@ -167,13 +167,22 @@ export async function JPL(tag: string = '1001') {
 			}
 		}
 	}
+
+	// const qkeys = Object.keys(props).filter((f) => f.match(/Q\(\d+\.\d+?\)/g));
+	// const qpart = {};
+	// qkeys.forEach((f) => {
+	// 	qpart[f] = props[f];
+	// 	delete props[f];
+	// });
+
+	// console.log(qpart);
 	await Bun.write(
 		// `./temp/jpl_${tag}_data.json`,
 		`./temp/jpl_data.json`,
-		JSON.stringify({ ...props, name_meta, reference }, null, 2)
+		JSON.stringify({ name_meta, ...props, reference }, null, 2)
 	);
 	console.log('finished fetching JPL data');
 }
 
 // CDMS('004501');
-JPL('32002');
+JPL('45010');
