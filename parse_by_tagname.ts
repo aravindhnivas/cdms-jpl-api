@@ -87,15 +87,18 @@ export async function JPL(tag: string = '1001') {
 	const { data } = await axios.get(entries_url);
 
 	const datalines = data.split('\n');
-
 	const data_obj = {};
 	const qpart = {};
 	const rot_const = {};
+	let ref = data.split('headend')[1].trim();
+
+	console.log(data.split('headend')[1]);
 
 	for (let line of datalines) {
 		line = line.replaceAll(/[\\\\\$\^\{\}:=]/g, '').trim();
 
 		if (line.includes('headend')) break;
+
 		if (!line) continue;
 		console.log(line);
 		if (line.match(/Q\(\d+\.\d+?\)/g)) {
@@ -131,7 +134,7 @@ export async function JPL(tag: string = '1001') {
 	}
 	await Bun.write(
 		`./temp/jpl_${tag}_data.json`,
-		JSON.stringify({ ...data_obj, qpart, rot_const }, null, 2)
+		JSON.stringify({ ...data_obj, ...rot_const, ...qpart, ref }, null, 2)
 	);
 	// const columns = ["Species Tag", "Version", "Date", "Contributor", "Lines Listed", "Freq. (GHz) <", "Max. J", "LOGSTR0", "LOGSTR1", "Isotope Corr.", "Egy. (cm$^{-1}$) $>$", "$\\mu_a$ =", "$\\mu_b$ =", "$\\mu_c$ ="];
 }
