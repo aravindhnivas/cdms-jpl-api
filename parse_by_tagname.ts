@@ -95,18 +95,13 @@ export async function JPL(tag: string = '1001') {
 	const entries_url = `https://spec.jpl.nasa.gov/ftp/pub/catalog/doc/d${tag}.cat`;
 	const { data } = await axios.get(entries_url);
 
-	const datalines = data.split('\n');
-	const reference = sanitize_latext_to_string(data.split('headend')[1])
+	const [entries, ref] = data.split('headend');
+	const reference = sanitize_latext_to_string(ref)
 		.split('\n')
 		.map((f) => f.trim())
 		.filter((f) => f);
 
-	const data_obj = {};
-	const qpart = {};
-	let meta: string[] = [];
-
-	const save_data = data
-		.split('headend')[0]
+	const save_data = entries
 		.replaceAll(/[\\\\\$\^\{\}:=]/g, '')
 		.split('\n')
 		.map((f) => f.trim());
