@@ -78,29 +78,32 @@ export async function CDMS(tag: string = '005502') {
 	return processed_informations;
 }
 
-// CDMS('039502');
-
 export async function JPL(tag: string = '1001') {
 	tag = tag.padStart(6, '0');
-
 	const entries_url = `https://spec.jpl.nasa.gov/ftp/pub/catalog/doc/d${tag}.cat`;
 	const { data } = await axios.get(entries_url);
 
 	const datalines = data.split('\n');
+	let ref = data
+		.split('headend')[1]
+		.replaceAll(/[$\^\{\}]/g, '')
+		// .replaceAll(/\\\\(bf|it)\b/g, '')
+		.trim();
+	ref = ref
+		.split('\n')
+		.map((f) => f.trim())
+		.filter((f) => f);
+
 	const data_obj = {};
 	const qpart = {};
 	const rot_const = {};
-	let ref = data.split('headend')[1].trim();
-
-	console.log(data.split('headend')[1]);
 
 	for (let line of datalines) {
 		line = line.replaceAll(/[\\\\\$\^\{\}:=]/g, '').trim();
 
 		if (line.includes('headend')) break;
-
 		if (!line) continue;
-		console.log(line);
+
 		if (line.match(/Q\(\d+\.\d+?\)/g)) {
 			const [key, value] = line
 				.split('&')
@@ -110,7 +113,6 @@ export async function JPL(tag: string = '1001') {
 		}
 
 		if (line.match(/[ABC]&/g)) {
-			console.log(line);
 			const [key, value] = line
 				.split('&')
 				.map((f) => f.trim())
@@ -136,7 +138,8 @@ export async function JPL(tag: string = '1001') {
 		`./temp/jpl_${tag}_data.json`,
 		JSON.stringify({ ...data_obj, ...rot_const, ...qpart, ref }, null, 2)
 	);
-	// const columns = ["Species Tag", "Version", "Date", "Contributor", "Lines Listed", "Freq. (GHz) <", "Max. J", "LOGSTR0", "LOGSTR1", "Isotope Corr.", "Egy. (cm$^{-1}$) $>$", "$\\mu_a$ =", "$\\mu_b$ =", "$\\mu_c$ ="];
+	return { ...data_obj, ...rot_const, ...qpart, ref };
 }
+
 // CDMS('004501');
-JPL('4001');
+JPL('46004');
