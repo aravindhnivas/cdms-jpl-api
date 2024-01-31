@@ -122,17 +122,34 @@ export async function JPL(tag: string = '1001') {
 			qval = parts[parts.length - 1] + ' ' + qval;
 		}
 
+		if (!(key || qkey) && value && data_obj['Contributor']) {
+			data_obj['Contributor'].push(value);
+			continue;
+		}
+
+		if (key === 'Contributor') {
+			if (key in data_obj) {
+				data_obj[key].push(value);
+			} else {
+				data_obj[key] = [value];
+			}
+			continue;
+		}
+
 		key ? (data_obj[key] = value) : meta.push(value);
 		qkey ? (qpart[qkey] = qval) : meta.push(qval);
 	}
 	meta = meta.filter((f) => f);
+	const name = {
+		formula: data_obj['Name'],
+		name: meta[0]
+	};
 	await Bun.write(
-		`./temp/jpl_${tag}_data.json`,
-		// `./temp/jpl_data.json`,
+		// `./temp/jpl_${tag}_data.json`,
+		`./temp/jpl_data.json`,
 		JSON.stringify({ ...data_obj, ...qpart, meta, reference }, null, 2)
 	);
-	// return { ...data_obj, ...rot_const, ...qpart, reference };
 }
 
 // CDMS('004501');
-// JPL('2001');
+JPL('41006');
