@@ -1,6 +1,24 @@
 {
   "name": "cdms-jpl-api",
   "version": "0.0.1",
+  "description": "A simple API to get data from the JPL and CDMS spectroscopy databases",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "A. N. Marimuthu",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aravindhnivas/cdms-jpl-api.git"
+  },
+  "keywords": [
+    "jpl",
+    "cdms",
+    "spectroscopy",
+    "astronomy",
+    "astrophysics"
+  ],
   "dependencies": {
     "axios": "^1.6.7",
     "cheerio": "^1.0.0-rc.12",
