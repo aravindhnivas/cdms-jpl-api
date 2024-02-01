@@ -24,7 +24,9 @@ export async function parse_cdms_data(cdms_html_string: string) {
 	if (!cdms_html_string) throw new Error('No data provided');
 	const $ = cheerio.load(cdms_html_string);
 
-	let tableData: string[] = [];
+	let tableData: {
+		[key: string]: string;
+	}[] = [];
 	console.log('parsing table');
 
 	const columns: string[] = [];
@@ -36,7 +38,9 @@ export async function parse_cdms_data(cdms_html_string: string) {
 	$('table')
 		.find('tr')
 		.each((index, row) => {
-			let cols: Record<string, string> = {};
+			let cols: {
+				[key: string]: string;
+			} = {};
 			$(row)
 				.find('td')
 				.each((i, col) => {

@@ -6,25 +6,31 @@ function endash_str(str: string) {
 
 export async function CDMS(html_data: string) {
 	if (!html_data) throw new Error('No data provided');
+
 	const $ = cheerio.load(html_data);
 	const ref_element = $('p font[color="#064898"]');
 	const references: string[] = [];
+
 	const td_val = $("td[align='right']");
 	const td_parent = td_val.parent();
 
-	const full_info = {};
-	for (const arr of td_parent.toArray()) {
-		const key = $(arr?.firstChild).text().trim();
+	const full_info: {
+		[key: string]: string | string[];
+	} = {};
+
+	for (const el of td_parent.toArray()) {
+		if (!el.firstChild || !el.lastChild) continue;
+		const key = $(el.firstChild)?.text().trim();
 		let value: string | string[] = '';
 
 		if (key === 'Contributor') {
-			if ($(arr.lastChild).html()?.includes('<br>')) {
-				value = $(arr.lastChild).html()?.split('<br>');
+			if ($(el.lastChild).html()?.includes('<br>')) {
+				value = $(el.lastChild).html()?.split('<br>') || [];
 			} else {
-				value = [endash_str($(arr.lastChild).text().trim())];
+				value = [endash_str($(el.lastChild).text().trim())];
 			}
 		} else {
-			value = endash_str($(arr.lastChild).text().trim());
+			value = endash_str($(el.lastChild).text().trim());
 		}
 		full_info[endash_str(key)] = value;
 	}
@@ -143,7 +149,6 @@ export async function JPL(html_data: string = '') {
 			if (k2 && v2) {
 				props[k2] = v2;
 			}
-
 			if (!k2 && v2) {
 				name_meta.push(v2);
 			}
@@ -151,7 +156,9 @@ export async function JPL(html_data: string = '') {
 	}
 
 	const qkeys = Object.keys(props).filter((f) => f.match(/Q\(\d+\.\d+?\)/g));
-	const qpart = {};
+	const qpart: {
+		[key: string]: string | string[];
+	} = {};
 	qkeys.forEach((f) => {
 		qpart[f] = props[f];
 		delete props[f];
