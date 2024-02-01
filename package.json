@@ -2,7 +2,6 @@
   "dependencies": {
     "axios": "^1.6.7",
     "cheerio": "^1.0.0-rc.12",
-    "googlescholar-scrape": "^0.0.1",
     "json2csv": "^6.0.0-alpha.2"
   },
   "devDependencies": {
