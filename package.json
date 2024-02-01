@@ -31,10 +31,11 @@
     "cheerio": "^1.0.0-rc.12"
   },
   "devDependencies": {
-    "axios": "^1.6.7",
-    "json2csv": "^6.0.0-alpha.2",
     "@types/bun": "^1.0.4",
+    "@types/json2csv": "^5.0.7",
+    "axios": "^1.6.7",
     "bun-plugin-dts": "^0.2.1",
+    "json2csv": "^6.0.0-alpha.2",
     "typescript": "^5.3.3"
   }
 }
