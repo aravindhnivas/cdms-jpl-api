@@ -129,4 +129,4 @@ const fetch_jpl = async () => {
 	}
 };
 
-await fetch_jpl();
+// await fetch_jpl();
