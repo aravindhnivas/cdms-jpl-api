@@ -1,5 +1,11 @@
-import { write_json_file, write_txt_file, url_from_jpl_tag, url_from_cdms_tag } from '../src/utils';
-import { CDMS, JPL } from '../src/parse_by_tagname';
+import {
+	write_json_file,
+	write_txt_file,
+	url_from_jpl_tag,
+	url_from_cdms_tag,
+	CDMS,
+	JPL
+} from '../src/';
 
 const fetch_cdms = async (tag: string) => {
 	try {

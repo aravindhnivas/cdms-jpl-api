@@ -1,5 +1,10 @@
-import { html_to_csv, write_json_file, fetch_data_from_url } from '../src/utils';
-import { parse_cdms_data, parse_jpl_data } from '../src/parse_full_table';
+import {
+	html_to_csv,
+	write_json_file,
+	fetch_data_from_url,
+	parse_cdms_data,
+	parse_jpl_data
+} from '../src/';
 
 const fetch_cdms = async () => {
 	try {
