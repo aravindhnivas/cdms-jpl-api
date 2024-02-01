@@ -1,4 +1,5 @@
-import { write_json_file, write_txt_file, URLs_by_tag, JPL, CDMS } from '../src/';
+import { JPL, CDMS } from '../src/';
+import { write_json_file, write_txt_file, URLs_by_tag } from './utils';
 import axios from 'axios';
 
 const fetch_by_tag = async (tag: string, database: 'CDMS' | 'JPL' = 'CDMS') => {

@@ -9,7 +9,7 @@
     "build": "bun run build.mjs",
     "prepublishOnly": "bun run build"
   },
-  "author": "A. N. Marimuthu",
+  "author": "A. N. Marimuthu <aravindhnivas28@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/aravindhnivas/cdms-jpl-api#readme",
   "repository": {

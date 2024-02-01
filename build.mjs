@@ -1,11 +1,6 @@
 import dts from 'bun-plugin-dts'
-
 await Bun.build({
-  entrypoints: [
-    './src/index.ts',
-    // './src/parse_by_tagname.ts', 
-    // './src/parse_full_table.ts', 
-  ],
+  entrypoints: ['./src/index.ts'],
   outdir: './dist',
   minify: true,
   target: 'node',
