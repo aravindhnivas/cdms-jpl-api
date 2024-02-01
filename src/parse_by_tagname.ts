@@ -1,30 +1,20 @@
-import * as Bun from 'bun';
-import axios from 'axios';
 import * as cheerio from 'cheerio';
-// import tex2str from 'latex-to-unicode';
 
-// console.log(tex2str('\\Sigma'));
 function endash_str(str: string) {
 	return str.replaceAll('–', '-').trim();
 }
 
-export async function CDMS(tag: string = '005502') {
-	tag = tag.padStart(6, '0');
-	const entries_url = `https://cdms.astro.uni-koeln.de/cgi-bin/cdmsinfo?file=e${tag}.cat`;
-	const { data } = await axios.get(entries_url);
-
-	const $ = cheerio.load(data);
+export async function CDMS(html_data: string) {
+	if (!html_data) throw new Error('No data provided');
+	const $ = cheerio.load(html_data);
 	const ref_element = $('p font[color="#064898"]');
 	const references: string[] = [];
-
-	// console.log("\n\nscraping references\n\n");
 	const td_val = $("td[align='right']");
 	const td_parent = td_val.parent();
 
 	const full_info = {};
 	for (const arr of td_parent.toArray()) {
 		const key = $(arr?.firstChild).text().trim();
-		// const value = $(arr.lastChild).text().trim();
 		let value: string | string[] = '';
 
 		if (key === 'Contributor') {
@@ -47,7 +37,6 @@ export async function CDMS(tag: string = '005502') {
 	}
 
 	const heading = $("caption font:not([color='red'])");
-	// console.log(heading.html()?.split(/[, ]/g));
 	const [name_formula, ...name_formula_meta] = heading.text()?.trim()?.split(/[, ]/g);
 	const [name_html, ...name_html_meta] =
 		heading
@@ -76,7 +65,6 @@ export async function CDMS(tag: string = '005502') {
 		}
 	};
 	const processed_informations = { name, ...full_info, references };
-	await Bun.write(`./temp/cdms_${tag}_data.json`, JSON.stringify(processed_informations, null, 2));
 	return processed_informations;
 }
 
@@ -92,24 +80,18 @@ const sanitize_latext_to_string = (str: string) => {
 		.trim();
 };
 
-export async function JPL(tag: string = '1001') {
-	tag = tag.padStart(6, '0');
-	const entries_url = `https://spec.jpl.nasa.gov/ftp/pub/catalog/doc/d${tag}.cat`;
-	const { data } = await axios.get(entries_url);
-
-	const [entries, ref] = data.split('headend');
+export async function JPL(html_data: string = '') {
+	if (!html_data) throw new Error('No data provided');
+	const [entries, ref] = html_data.split('headend');
 	const reference = sanitize_latext_to_string(ref)
 		.split('\n')
 		.map((f) => f.trim())
 		.filter((f) => f);
 
-	const save_data = entries
+	const raw_data = entries
 		.replaceAll(/[\\\\\$\^\{\}:]/g, '')
-		// .replaceAll(/(\\\\(?!\+)|[$:{}^])/g, '')
 		.split('\n')
 		.map((f) => f.trim());
-
-	await Bun.write(`./temp/jpl_data.txt`, save_data.join('\n').trim());
 
 	const name_meta: string[] = [];
 	const props: {
@@ -118,7 +100,7 @@ export async function JPL(tag: string = '1001') {
 		reference: string[];
 	} = { Contributor: [], reference: [] };
 	let start_second_part = false;
-	for (const ln of save_data) {
+	for (const ln of raw_data) {
 		const splitted_key_val = ln.split('&').map((f) => f.trim());
 		if (splitted_key_val.join('').trim() === '') continue;
 		if (ln.includes('Lines Listed ')) {
@@ -175,14 +157,6 @@ export async function JPL(tag: string = '1001') {
 		delete props[f];
 	});
 
-	// console.log(qpart);
-	await Bun.write(
-		// `./temp/jpl_${tag}_data.json`,
-		`./temp/jpl_data.json`,
-		JSON.stringify({ name_meta, ...props, ...qpart, reference }, null, 2)
-	);
 	console.log('finished fetching JPL data');
+	return { name_meta, ...props, ...qpart, reference, raw_data };
 }
-
-// CDMS('004501');
-JPL('45010');
