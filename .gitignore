@@ -3,3 +3,6 @@ dist/
 temp/
 # demo/
 cdms_jpl_data/
+*.json
+*.csv
+*.xlsx
