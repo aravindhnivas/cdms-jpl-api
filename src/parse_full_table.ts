@@ -1,3 +1,5 @@
+/// <reference path="./types.d.ts" />
+
 import * as cheerio from 'cheerio';
 
 export async function parse_jpl_data(jpl_html_string: string) {
