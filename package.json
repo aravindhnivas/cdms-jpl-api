@@ -1,6 +1,6 @@
 {
   "name": "cdms-jpl-api",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A simple API to get data from the JPL and CDMS spectroscopy databases",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
