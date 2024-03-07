@@ -1,5 +1,5 @@
 interface JPLData {
-	ID: string;
+	Tag: string;
 	Name: string;
 	'# lines': string;
 	Version: string;

@@ -18,11 +18,15 @@ export async function parse_jpl_data(jpl_html_string: string) {
 			const mod_row = row.split(/\s+/).slice(0, 4);
 			let obj: JPLData = {} as JPLData;
 			columns.forEach((column, index) => {
-				obj[column] = mod_row[index];
+				if (column === 'ID') {
+					obj.Tag = mod_row[index];
+				} else {
+					obj[column] = mod_row[index];
+				}
 			});
 			return obj;
 		})
-		.filter((obj) => !!obj.ID);
+		.filter((obj) => !!obj.Tag);
 	console.log('finished fetching JPL data');
 	return jpl_data_obj;
 }
