@@ -1,5 +1,5 @@
-// import { parse_cdms_data, parse_jpl_data } from 'cdms-jpl-api';
-import { parse_cdms_data, parse_jpl_data } from '../src/index';
+import { parse_cdms_data, parse_jpl_data } from 'cdms-jpl-api';
+// import { parse_cdms_data, parse_jpl_data } from '../src/index';
 import { html_to_csv, write_json_file, fetch_data_from_url } from './utils';
 
 const fetch_cdms = async () => {
