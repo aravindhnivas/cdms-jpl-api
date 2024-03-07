@@ -6,11 +6,12 @@ export async function parse_jpl_data(jpl_html_string: string) {
 	const jpl_data = $('pre').text();
 
 	const jpl_data_arr = jpl_data.split('\n').map((line) => line.trim());
-	const columns = ['ID', 'Name', '# lines', 'Version'];
+	const columns = ['ID', 'Name', '# lines', 'Version'] as const;
 	const data = jpl_data_arr.slice(1);
 	const jpl_data_obj = data.map((row) => {
 		const mod_row = row.split(/\s+/).slice(0, 4);
-		let obj: Record<string, string> = {};
+
+		let obj: JPLData = {} as JPLData;
 		columns.forEach((column, index) => {
 			obj[column] = mod_row[index];
 		});
@@ -24,38 +25,28 @@ export async function parse_cdms_data(cdms_html_string: string) {
 	if (!cdms_html_string) throw new Error('No data provided');
 	const $ = cheerio.load(cdms_html_string);
 
-	let tableData: {
-		[key: string]: string;
-	}[] = [];
+	let tableData: CDMSData[] = [];
 	console.log('parsing table');
 
-	const columns: string[] = [];
+	const columns: Array<keyof CDMSData> = [];
 	$('th').each((index, column) => {
-		const header_name = $(column).text().trim().replace('–', '-');
+		const header_name = $(column).text().trim().replace('–', '-') as keyof CDMSData;
 		if (header_name) columns.push(header_name);
 	});
 
 	$('table')
 		.find('tr')
 		.each((index, row) => {
-			let cols: {
-				[key: string]: string;
-			} = {};
+			let cols: CDMSData = {} as CDMSData;
 			$(row)
 				.find('td')
 				.each((i, col) => {
-					if (
-						!(
-							columns[i] === 'Catalog' ||
-							columns[i] === 'Entry in cm-1' ||
-							columns[i] === 'Documentation'
-						)
-					) {
-						const val = $(col).text().trim().replace('–', '-');
-						cols[columns[i]] = val;
-					}
+					const val = $(col).text().trim().replace('–', '-');
+					cols[columns[i]] = val;
 				});
-			tableData.push(cols);
+			if (cols && cols.Tag) {
+				tableData.push(cols);
+			}
 		});
 	console.log('finished fetching data');
 	return tableData;
