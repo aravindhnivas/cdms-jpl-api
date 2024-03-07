@@ -2,21 +2,25 @@ import * as cheerio from 'cheerio';
 
 export async function parse_jpl_data(jpl_html_string: string) {
 	if (!jpl_html_string) throw new Error('No data provided');
+
 	const $ = cheerio.load(jpl_html_string);
 	const jpl_data = $('pre').text();
 
 	const jpl_data_arr = jpl_data.split('\n').map((line) => line.trim());
 	const columns = ['ID', 'Name', '# lines', 'Version'] as const;
-	const data = jpl_data_arr.slice(1);
-	const jpl_data_obj = data.map((row) => {
-		const mod_row = row.split(/\s+/).slice(0, 4);
 
-		let obj: JPLData = {} as JPLData;
-		columns.forEach((column, index) => {
-			obj[column] = mod_row[index];
-		});
-		return obj;
-	});
+	const data = jpl_data_arr.slice(1);
+
+	const jpl_data_obj = data
+		.map((row) => {
+			const mod_row = row.split(/\s+/).slice(0, 4);
+			let obj: JPLData = {} as JPLData;
+			columns.forEach((column, index) => {
+				obj[column] = mod_row[index];
+			});
+			return obj;
+		})
+		.filter((obj) => !!obj.ID);
 	console.log('finished fetching JPL data');
 	return jpl_data_obj;
 }
