@@ -6,3 +6,4 @@ cdms_jpl_data/
 *.json
 *.csv
 *.xlsx
+.DS_Store
