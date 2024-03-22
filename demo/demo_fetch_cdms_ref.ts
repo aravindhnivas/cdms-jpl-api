@@ -14,15 +14,24 @@ import * as cheerio from 'cheerio';
 // 	}
 // );
 
-console.log('fetching CDMS data');
-const cdms_tag_url = await url_from_cdms_tag('016501');
-console.log(cdms_tag_url);
-const res = await axios.get(cdms_tag_url);
-const cdms_html = res.data;
-const $ = cheerio.load(cdms_html);
-// const ref_texts = $('p[align="justify"]').text();
-// console.log(ref_texts);
+async function fetch_all_cdms_ref(tag: string | number) {
+	console.log('fetching CDMS data');
+	const cdms_tag_url = await url_from_cdms_tag(tag);
+	console.log(cdms_tag_url);
+	const res = await axios.get(cdms_tag_url);
+	const cdms_html = res.data;
+	const $ = cheerio.load(cdms_html);
 
-const ref_list = $('font[color="#064898"]').text();
-console.log(ref_list);
-console.log('finished fetching CDMS data');
+	const ref_texts = $('font[color="#064898"]').text();
+	console.log(ref_texts);
+
+	const entries = ref_texts
+		.split(/\(\d+\)\s/g)
+		.filter((f) => f.trim().length > 0)
+		.map((f) => f.replaceAll('\n', ' ').trim());
+	console.log(entries, entries.length);
+	console.log('finished fetching CDMS data');
+	return entries;
+}
+
+await fetch_all_cdms_ref(16501);
