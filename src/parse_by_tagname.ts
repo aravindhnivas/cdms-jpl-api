@@ -9,7 +9,11 @@ export async function CDMS(html_data: string) {
 
 	const $ = cheerio.load(html_data);
 	const ref_element = $('p font[color="#064898"]');
-	const references: string[] = [];
+	const references: string[] = ref_element
+		.text()
+		.split(/\(\d+\)\s/g)
+		.filter((f) => f.trim().length > 0)
+		.map((f) => f.replaceAll('\n', ' ').trim());
 
 	const td_val = $("td[align='right']");
 	const td_parent = td_val.parent();
