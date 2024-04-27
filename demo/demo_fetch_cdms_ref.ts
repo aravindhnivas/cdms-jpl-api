@@ -1,18 +1,28 @@
 import axios from 'axios';
-import { html_to_csv, write_json_file, url_from_cdms_tag } from './utils';
+import { url_from_cdms_tag } from './utils';
 import * as cheerio from 'cheerio';
-// import CrossRef from 'crossref';
-// console.time('crossref');
-// CrossRef.works(
-// 	{
-// 		query:
-// 			'J.-T. Spaniol, K. L. K. Lee, O. Pirali, C. Puzzarini, and M.-A. Martin-Drumel, 2023, Phys. Chem. Chem. Phys., 25, 6397.'
-// 	},
-// 	(err, obj) => {
-// 		console.timeEnd('crossref');
-// 		console.log({ doi: obj[0].DOI, url: obj[0].URL });
-// 	}
-// );
+import CrossRef from 'crossref';
+console.time('crossref');
+CrossRef.works(
+	{
+		query: 'F. Matsushima, T. Oka, and K. Takagi, 1997, Phys. Rev. Lett., 78, 1664'
+	},
+	(err, obj) => {
+		console.timeEnd('crossref');
+		console.log({ doi: obj[0].DOI, url: obj[0].URL });
+
+		console.log({
+			1: obj[1].URL,
+			2: obj[2].URL,
+			3: obj[3].URL,
+			4: obj[4].URL,
+			5: obj[5].URL,
+			6: obj[6].URL,
+			7: obj[7].URL,
+			8: obj[8].URL
+		});
+	}
+);
 
 async function fetch_all_cdms_ref(tag: string | number) {
 	console.log('fetching CDMS data');
@@ -34,4 +44,4 @@ async function fetch_all_cdms_ref(tag: string | number) {
 	return entries;
 }
 
-await fetch_all_cdms_ref(16501);
+// await fetch_all_cdms_ref(16501);
