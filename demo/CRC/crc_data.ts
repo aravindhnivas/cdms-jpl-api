@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import * as json2csv from 'json2csv';
+import { unlink } from 'node:fs/promises';
 
 const fetch_data_from_url = async (url: string) => {
 	// console.log(`fetching data from ${url}`);
@@ -26,7 +27,7 @@ const get_crc_data_by_page = async (page_no: number | string = 1) => {
 	// console.log(tds.length);
 
 	const header_names = tds.map((i, el) => $(el).text()).get();
-	console.log(header_names);
+	// console.log(header_names);
 
 	const tbody = table.find('tbody');
 	const rows = tbody.find('tr');
@@ -51,7 +52,7 @@ const get_crc_data_by_page = async (page_no: number | string = 1) => {
 const get_crc_data = async (range = [1, 2]) => {
 	let progress = 0;
 	let full_data: string[][] = [];
-
+	let prev_filename = '';
 	const [start, end] = range;
 	for (let i = start; i <= end; i++) {
 		const { data } = await get_crc_data_by_page(i);
@@ -62,22 +63,28 @@ const get_crc_data = async (range = [1, 2]) => {
 		await delay(1000);
 		console.log(`Downloading ${progress.toFixed(2)}%`);
 
-		// write to file every 10 pages
-		if (i % 10 === 0) {
-			const filename = `crc_data_${i}`;
-			const csv = json2csv.parse(data);
-			console.log(`writing ${filename}.csv`);
-			await Bun.write(`${filename}.csv`, csv);
+		// write to file every 50 pages
+		if (i % 50 === 0) {
+			const new_filename = `crc_data_${i}.csv`;
+			const csv = json2csv.parse(full_data);
+			console.log(`writing ${new_filename}`);
+			await Bun.write(new_filename, csv);
+			if (prev_filename) await unlink(prev_filename);
+			prev_filename = new_filename;
 		}
 	}
 	console.log('finished');
 	return full_data;
 };
 
-const data = await get_crc_data([1, 2]);
+const max = 546;
+
+// const data = await get_crc_data([1, 2]);
+// const data = await get_crc_data([1, max]);
 
 // const filename = 'crc_data_full';
 // const csv = json2csv.parse(data);
 
 // console.log('writing csv');
 // await Bun.write(`${filename}.csv`, csv);
+// console.log('finished writing csv');
