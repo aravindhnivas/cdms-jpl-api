@@ -9,3 +9,4 @@ cdms_jpl_data/
 .DS_Store
 *.html
 /demo/CRC/catboost_info
+*.pyc
