@@ -8,3 +8,4 @@ cdms_jpl_data/
 *.xlsx
 .DS_Store
 *.html
+/demo/CRC/catboost_info
