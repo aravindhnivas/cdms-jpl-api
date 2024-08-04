@@ -10,3 +10,4 @@ cdms_jpl_data/
 *.html
 /demo/CRC/catboost_info
 *.pyc
+/demo/catboost_info
