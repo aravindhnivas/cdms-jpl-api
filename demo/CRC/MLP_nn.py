@@ -96,7 +96,7 @@ def objective(trial):
     # Hyperparameters to optimize
     hidden_dim = trial.suggest_int("hidden_dim", 32, 256)
     dropout_rate = trial.suggest_float("dropout_rate", 0.1, 0.5)
-    learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1e-2)
+    learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)
     batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 128])
 
     # Create model, optimizer, and criterion
@@ -132,7 +132,8 @@ def objective(trial):
 
 def load_data():
     # Load your data here
-    loc = pt("/Users/aravindhnivas/Documents/code-testing/ML properties/")
+    # loc = pt("/Users/aravindhnivas/Documents/code-testing/ML properties/")
+    loc = pt("/Users/aravindhnivas/Documents/test-codes/umda/ML properties/")
     mp_csv_file = loc / "melting_points_updated.csv"
 
     df = pd.read_csv(mp_csv_file, index_col=0)
