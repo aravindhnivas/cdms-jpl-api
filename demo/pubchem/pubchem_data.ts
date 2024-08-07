@@ -80,4 +80,4 @@ const save_csv = async () => {
 	console.log('Finished');
 };
 
-await save_csv();
+// await save_csv();
