@@ -1,7 +1,7 @@
 import axios from 'axios';
-import * as cheerio from 'cheerio';
+// import * as cheerio from 'cheerio';
 import * as json2csv from 'json2csv';
-import { unlink } from 'node:fs/promises';
+// import { unlink } from 'node:fs/promises';
 
 const fetch_data_from_url = async (url: string) => {
 	console.log(`fetching data from ${url}`);
